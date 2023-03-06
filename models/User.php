@@ -11,17 +11,12 @@ class User
     private $password;
     private $role;
     private $image;
+    private $db;
 
 
-    public function __construct(string $name, string $lastname, string $email, string $password, string $role, string $image = "")
+    public function __construct()
     {
-        $this->name = $name;
-        $this->lastname = $lastname;
-        $this->email = $email;
-        $this->password = $password;
-        $this->role = $role;
-        $this->image = $image;
-
+        $this->db = db::dbConnection();
     }
 
     public function getName(){
@@ -29,7 +24,7 @@ class User
     }
 
     public function setName($name){
-        $this->name = $name;
+        $this->name = $this->db->real_escape_string($name);
     }
 
     public function getLastname(){
@@ -37,7 +32,7 @@ class User
     }
 
     public function setLastname($lastname){
-        $this->lastname = $lastname;
+        $this->lastname = $this->db->real_escape_string($lastname);
     }
 
     public function getEmail(){
@@ -45,7 +40,15 @@ class User
     }
 
     public function setEmail($email){
-        $this->email = $email;
+        $this->email = $this->db->real_escape_string($email);
+    }
+
+    public function getPassword(){
+        return $this->password;
+    }
+
+    public function setPassword($password){
+        $this->password = $this->db->real_escape_string($password);
     }
 
     public function getRole(){
@@ -53,7 +56,7 @@ class User
     }
 
     public function setRole($role){
-        $this->role = $role;
+        $this->role = $this->db->real_escape_string($role);
     }
 
     public function getImage(){
@@ -61,13 +64,32 @@ class User
     }
 
     public function setImage($image){
-        $this->image = $image;
+        $this->image = $this->db->real_escape_string($image);
     }
 
     public function saveUserDb(){
-        $dbConnection = db::dbConnection();
-        $sql = "INSERT INTO usuarios VALUES ('','$this->name', '$this->lastname', '$this->email','$this->password' , '$this->role', '$this->image' )";
-        $dbConnection->query($sql);
+        $hashed_password = password_hash($this->password, PASSWORD_BCRYPT, ['cost'=>4]);
+        $sql = "INSERT INTO usuarios VALUES ('','{$this->getName()}', '{$this->getLastname()}', '{$this->getEmail()}','$hashed_password' , '{$this->getRole()}', '{$this->getImage()}' )";
+        return $this->db->query($sql);
+    }
+
+    public function logInUser(){
+        $sql = "SELECT * FROM usuarios WHERE email = '$this->email'";
+
+        $results = $this->db->query($sql);
+
+        if($results->num_rows > 0){
+            $user = $results->fetch_object();
+
+            if(password_verify($this->password,$user->password)){
+                return $user;
+            }
+            else{
+                return false;
+            }
+
+
+        }
     }
 
 }

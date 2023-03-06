@@ -1,0 +1,1 @@
+<h2>Your user was created correctly</h2>

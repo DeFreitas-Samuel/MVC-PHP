@@ -1,7 +1,11 @@
 <?php
-session_start();
+if(!isset($_SESSION)){
+    session_start();
+}
+
 require_once 'autoloader.php';
 require_once 'config/db.php';
+require_once 'helpers/Utils.php';
 require_once 'views/layout/header.php';
 require_once 'views/layout/sidebar.php';
 

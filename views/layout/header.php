@@ -13,13 +13,13 @@
 <header id="header">
     <div id="logo">
         <img src="<?=base_url?>assets/img/camiseta.png">
-        <a href="index_template.php">Tienda de Camisetas</a>
+        <a href="<?=base_url?>">Tienda de Camisetas</a>
     </div>
 </header>
 <nav id="menu">
     <ul>
         <li>
-            <a href="#">Inicio</a>
+            <a href="<?=base_url?>">Inicio</a>
         </li>
         <li>
             <a href="#">Categoria 2</a>

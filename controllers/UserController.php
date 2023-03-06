@@ -1,6 +1,6 @@
 <?php
 require_once "models/User.php";
-//require_once "config/db.php";
+
 
 class UserController
 {
@@ -12,26 +12,57 @@ class UserController
         require_once 'views/user/registerView.php';
     }
 
+    public function logIn(){
+        $userLogin = new User();
+        $userLogin->setEmail($_POST["email"]);
+        $userLogin->setPassword($_POST["password"]);
+
+        $login = $userLogin->logInUser();
+
+        if($login){
+            $_SESSION["user"] = $login;
+            var_dump($login);
+        }
+
+    }
+
     public function saveUser(){
         if(!empty($_POST)){
-            $db = db::dbConnection();
 
-            $unsafe_password = mysqli_real_escape_string($db,$_POST['password']) ?? false;
+            $firstname = $_POST['name'] ?? false;
+            $lastname =$_POST['lastname'] ?? false ;
+            $email = $_POST['email'] ?? false;
+            $password = $_POST['password'] ?? false;
+            $role = $_POST['role'] ?? false;
 
-            $firstname = mysqli_real_escape_string($db,$_POST['name']) ?? false;
-            $lastname = mysqli_real_escape_string($db,$_POST['lastname']) ?? false;
-            $email = mysqli_real_escape_string($db,$_POST['email']) ?? false;
-            $securePassword = password_hash($unsafe_password, PASSWORD_BCRYPT, ['cost'=>4]);
-            $role = mysqli_real_escape_string($db,$_POST['role']) ?? false;
+            $firstname = Utils::validateNames($firstname) ? $firstname : false;
+            $lastname = Utils::validateNames($lastname) ? $lastname : false;
+            $email = Utils::validateEmail($email) ? $email : false;
 
-            if ($firstname && $lastname && $email && $unsafe_password && $role){
-                $newUser = new User($firstname, $lastname, $email, $securePassword, $role);
-                $newUser->saveUserDb();
-                var_dump($newUser);
+
+            if ($firstname && $lastname && $email && $password && $role){
+
+                $newUser = new User();
+                $newUser->setName($firstname);
+                $newUser->setLastname($lastname);
+                $newUser->setEmail($email);
+                $newUser->setPassword($password);
+                $newUser->setRole($role);
+                $result = $newUser->saveUserDb();
+
+                if ($result){
+                    $_SESSION["signup"] = "Complete";
+                }
+                else{
+                    $_SESSION["signup"] = "Failed";
+                }
             }
+            else {
+                $_SESSION["signup"] = "Failed";
+            }
+            header("location:".base_url."user/signup");
 
 
-            var_dump($_POST);
         }
     }
 
