@@ -1,1 +1,1 @@
-<h2>Your user was created correctly</h2>
+<h2>Client Dashboard</h2>       

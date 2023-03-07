@@ -52,6 +52,8 @@ class UserController
 
                 if ($result){
                     $_SESSION["signup"] = "Complete";
+                    $newUser->setPassword("");
+                    $_SESSION["user"] = $newUser;
                 }
                 else{
                     $_SESSION["signup"] = "Failed";
@@ -60,7 +62,7 @@ class UserController
             else {
                 $_SESSION["signup"] = "Failed";
             }
-            header("location:".base_url."user/signup");
+            header("location:".base_url."user/dashboard");
 
 
         }
@@ -68,6 +70,16 @@ class UserController
     public function signOut(){
         Utils::deleteSession("user");
         header("location:".base_url);
+    }
+
+    public function dashboard(){
+        if(!isset($_SESSION["user"])){
+            header("location:".base_url);
+        } 
+        require_once "views/user/clientDashboardView.php";
+
+        
+
     }
 
 }
