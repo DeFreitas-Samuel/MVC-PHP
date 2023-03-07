@@ -65,6 +65,9 @@ class UserController
 
         }
     }
-
+    public function signOut(){
+        Utils::deleteSession("user");
+        header("location:".base_url);
+    }
 
 }
